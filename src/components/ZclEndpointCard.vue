@@ -23,31 +23,31 @@ limitations under the License.
       <div @click='toggleShowAllInformationOfEndpoint' class="row">
         <div class="vertical-align:middle q-pa-md col-5">
           <strong
-            >Endpoint - {{ getFormattedEndpointId(endpointReference) }}</strong
+          >Endpoint - {{ getFormattedEndpointId(endpointReference) }}</strong
           >
         </div>
         <q-card-actions class="q-gutter-xs col ">
-        <q-btn
-          flat
-          dense
-          label="Delete"
-          color="primary"
-          v-close-popup
-          size="sm"
-          icon="delete"
-          @click="handleDeletionDialog"
-        />
-        <q-btn
-          flat
-          dense
-          label="Edit"
-          color="primary"
-          icon="edit"
-          size="sm"
-          v-close-popup
-          @click="modifyEndpointDialog = !modifyEndpointDialog"
-        />
-      </q-card-actions>
+          <q-btn
+            flat
+            dense
+            label="Delete"
+            color="primary"
+            v-close-popup
+            size="sm"
+            icon="delete"
+            @click="handleDeletionDialog"
+          />
+          <q-btn
+            flat
+            dense
+            label="Edit"
+            color="primary"
+            icon="edit"
+            size="sm"
+            v-close-popup
+            @click="modifyEndpointDialog = !modifyEndpointDialog"
+          />
+        </q-card-actions>
       </div>
       <q-list dense bordered v-if="showAllInformationOfEndpoint">
         <br />
@@ -258,7 +258,7 @@ export default {
       get() {
         return this.zclDeviceTypes[
           this.endpointDeviceTypeRef[this.endpointType[this.endpointReference]]
-        ]
+          ]
       },
     },
     networkId: {

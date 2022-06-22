@@ -77,10 +77,7 @@ limitations under the License.
             >
           </q-btn>
         </q-toolbar>
-        <q-dialog
-          v-model="globalOptionsDialog"
-          class="background-color:transparent"
-        >
+        <q-dialog v-model="globalOptionsDialog" class="background-color:transparent">
           <ZclGeneralOptionsBar />
         </q-dialog>
       </q-header>

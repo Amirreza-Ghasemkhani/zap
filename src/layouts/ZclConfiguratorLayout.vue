@@ -55,9 +55,11 @@ limitations under the License.
             @click="globalOptionsDialog = !globalOptionsDialog"
             id="global_options"
           >
-            <div v-if="displayButton" class="q-ml-xs">displayButton
-              ZCL GLOBAL OPTIONS…
-            </div>
+            <Transition name="bounce">
+              <div v-if="displayButton" class="q-ml-xs">
+                displayButton ZCL GLOBAL OPTIONS…
+              </div>
+            </Transition>
           </q-btn>
           <q-btn
             icon="list"
@@ -68,10 +70,17 @@ limitations under the License.
             :outline="false"
             @click="zclExtensionDialog = true"
           >
-            <div v-if="displayButton" class="text-align q-ml-xs">ZCL Extensions...</div>
+            <Transition name="bounce">
+              <div v-if="displayButton" class="text-align q-ml-xs">
+                ZCL Extensions...
+              </div></Transition
+            >
           </q-btn>
         </q-toolbar>
-        <q-dialog v-model="globalOptionsDialog" class="background-color:transparent">
+        <q-dialog
+          v-model="globalOptionsDialog"
+          class="background-color:transparent"
+        >
           <ZclGeneralOptionsBar />
         </q-dialog>
       </q-header>
@@ -243,5 +252,30 @@ export default {
 
 body.body--dark {
   background: #272821;
+}
+
+.bounce-enter-active {
+  animation: bounce-in .5s;
+}
+.bounce-leave-active {
+  animation: bounce-in .5s reverse;
+}
+
+@keyframes bounce-in {
+  0% {
+    opacity: 0 ;
+  }
+  25% {
+    opacity: 0.25 ;
+  }
+  50% {
+    opacity: 0.5 ;
+  }
+  75% {
+    opacity: 0.75 ;
+  }
+  100% {
+    opacity: 1 ;
+  }
 }
 </style>

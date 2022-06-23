@@ -270,7 +270,6 @@ export default {
       this.showAllInformationOfEndpoint = !this.showAllInformationOfEndpoint
     },
     getEndpointCardData() {
-      console.log('Get Endpoint Called')
       Vue.prototype
         .$serverGet(
           `${restApi.uri.endpointTypeClusters}${this.endpointType[this.endpointReference]}`

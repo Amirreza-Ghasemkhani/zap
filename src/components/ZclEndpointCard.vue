@@ -128,6 +128,7 @@ limitations under the License.
       <zcl-create-modify-endpoint
         v-bind:endpointReference="endpointReference"
         v-on:saveOrCreateValidated="modifyEndpointDialog = false"
+        @updateData="getEndpointCardData()"
       />
     </q-dialog>
     <q-dialog
@@ -268,13 +269,47 @@ export default {
     toggleShowAllInformationOfEndpoint() {
       this.showAllInformationOfEndpoint = !this.showAllInformationOfEndpoint
     },
+    getEndpointCardData() {
+      console.log('Get Endpoint Called')
+      Vue.prototype
+        .$serverGet(
+          `${restApi.uri.endpointTypeClusters}${this.endpointType[this.endpointReference]}`
+        )
+        .then((res) => {
+          let enabledClients = []
+          let enabledServers = []
+          res.data.forEach((record) => {
+            if (record.enabled) {
+              if (record.side === 'client') {
+                enabledClients.push(record.clusterRef)
+              } else {
+                enabledServers.push(record.clusterRef)
+              }
+            }
+          })
+          this.selectedservers = [...enabledServers, ...enabledServers]
+        })
+
+      Vue.prototype
+        .$serverGet(
+          `${restApi.uri.endpointTypeAttributes}${this.endpointType[this.endpointReference]}`
+        )
+        .then((res) => {
+          this.selectedAttributes = []
+          this.selectedReporting = []
+          res.data.forEach((record) => {
+            let resolvedReference = Util.cantorPair(
+              record.attributeRef,
+              record.clusterRef
+            )
+            if (record.included) this.selectedAttributes.push(resolvedReference)
+            if (record.includedReportable)
+              this.selectedReporting.push(resolvedReference)
+          })
+        })
+    },
   },
   computed: {
-    endpointListIds: {
-      get() {
-        return this.$store.state.zap.endpointsGeneratedId
-      }
-    },
     endpoints: {
       get() {
         return Array.from(this.endpointIdListSorted.keys()).map((id) => ({
@@ -335,48 +370,11 @@ export default {
       if(newValue) {
         this.showAllInformationOfEndpoint = true
       }
-    },
-    endpointListIds(item) {
-      console.log('aaaaa', item)
-      console.log(item.some(id => id == this.endpointReference))
     }
   },
   created() {
-    Vue.prototype
-      .$serverGet(
-        `${restApi.uri.endpointTypeClusters}${this.endpointType[this.endpointReference]}`
-      )
-      .then((res) => {
-        let enabledClients = []
-        let enabledServers = []
-        res.data.forEach((record) => {
-          if (record.enabled) {
-            if (record.side === 'client') {
-              enabledClients.push(record.clusterRef)
-            } else {
-              enabledServers.push(record.clusterRef)
-            }
-          }
-        })
-        this.selectedservers = [...enabledServers, ...enabledServers]
-      })
-
-    Vue.prototype
-      .$serverGet(
-        `${restApi.uri.endpointTypeAttributes}${this.endpointType[this.endpointReference]}`
-      )
-      .then((res) => {
-        res.data.forEach((record) => {
-          let resolvedReference = Util.cantorPair(
-            record.attributeRef,
-            record.clusterRef
-          )
-          if (record.included) this.selectedAttributes.push(resolvedReference)
-          if (record.includedReportable)
-            this.selectedReporting.push(resolvedReference)
-        })
-      })
-  },
+    this.getEndpointCardData()
+  }
 }
 </script>
 

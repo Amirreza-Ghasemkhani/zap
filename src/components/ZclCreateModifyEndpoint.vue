@@ -282,6 +282,7 @@ export default {
         this.$emit('saveOrCreateValidated')
         if (this.endpointReference) {
           this.editEpt(this.shownEndpoint, this.endpointReference)
+          this.$emit('updateData')
         } else {
           this.newEpt(this.shownEndpoint)
         }

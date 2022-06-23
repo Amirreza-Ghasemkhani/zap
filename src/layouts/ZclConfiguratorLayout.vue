@@ -38,7 +38,7 @@ limitations under the License.
             />
           </q-toolbar-title>
           <q-toolbar-title v-on:click.ctrl="showVersion" v-else>
-            Zigbee Cluster Configurator
+            Cluster configurator: {{ zclProperties.VERSION }}
           </q-toolbar-title>
           <q-space />
           <q-btn
@@ -65,11 +65,11 @@ limitations under the License.
                 <div class="text-align q-ml-xs">ZCL Extensions...</div>
               </q-btn>
         </q-toolbar>
-        
+
         <q-dialog v-model="globalOptionsDialog" class="background-color:transparent">
           <ZclGeneralOptionsBar />
         </q-dialog>
-        
+
       </q-header>
       <!-- Not using mobile mode, so breakpoint is set at 0 -->
       <q-drawer v-if="!showPreviewTab"
@@ -199,6 +199,11 @@ export default {
       get() {
         return this.$store.state.zap.endpointView.selectedEndpoint == null
       },
+    },
+    zclProperties: {
+      get() {
+        return this.$store.state.zap.allPackages.find(single => single.TYPE === "zcl-properties")
+      }
     }
   },
   data() {

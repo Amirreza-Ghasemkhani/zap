@@ -40,7 +40,7 @@ limitations under the License.
             />
           </q-toolbar-title>
           <q-toolbar-title v-on:click.ctrl="showVersion" v-else>
-            Zigbee Cluster Configurator
+            Cluster Configurator: {{ zclProperties.description || '' }}
           </q-toolbar-title>
           <q-space />
           <q-btn
@@ -207,6 +207,11 @@ export default {
         return this.$store.state.zap.endpointView.selectedEndpoint == null
       },
     },
+    zclProperties: {
+      get() {
+        return this.$store.state.zap.allPackages.find( single => single.type === 'zcl-properties')
+      }
+    }
   },
   data() {
     return {

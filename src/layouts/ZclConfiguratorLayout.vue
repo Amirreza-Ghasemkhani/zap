@@ -24,10 +24,7 @@ limitations under the License.
         class="shadow-2 zclConfiguratorLayoutHeader"
       >
         <q-toolbar bordered class="shadow-2 zclConfiguratorLayoutHeader row">
-          <q-toolbar-title
-            v-on:click.ctrl="showVersion"
-            v-if="showPreviewTab && this.endpointId[this.selectedEndpointId]"
-          >
+          <q-toolbar-title v-on:click.ctrl="showVersion" v-if="showPreviewTab && this.endpointId[this.selectedEndpointId]">
             <q-select
               filled
               :options="endpoints"
@@ -36,7 +33,8 @@ limitations under the License.
               emit-value
               map-options
               @input="setSelectedEndpoint($event)"
-              style="width: 250px"
+              bg-color="white"
+              style="width: 250px;"
             />
           </q-toolbar-title>
           <q-toolbar-title v-on:click.ctrl="showVersion" v-else>
@@ -71,16 +69,13 @@ limitations under the License.
           </q-btn>
         </q-toolbar>
 
-        <q-dialog
-          v-model="globalOptionsDialog"
-          class="background-color:transparent"
-        >
+        <q-dialog v-model="globalOptionsDialog" class="background-color:transparent">
           <ZclGeneralOptionsBar />
         </q-dialog>
+
       </q-header>
       <!-- Not using mobile mode, so breakpoint is set at 0 -->
-      <q-drawer
-        v-if="!showPreviewTab"
+      <q-drawer v-if="!showPreviewTab"
         v-model="leftDrawerOpen"
         bordered
         :breakpoint="0"
@@ -90,10 +85,10 @@ limitations under the License.
       </q-drawer>
       <q-page-container>
         <initial-content v-if="isSelectedEndpoint" />
-        <zcl-cluster-manager />
+        <zcl-cluster-manager  />
       </q-page-container>
     </q-layout>
-    <q-dialog v-model="zclExtensionDialog" style="width: 800px">
+    <q-dialog v-model="zclExtensionDialog" style="width:800px;">
       <ZclExtensionDialog />
     </q-dialog>
   </div>
@@ -112,15 +107,16 @@ const commonUrl = require('../../src-shared/common-url.js')
 export default {
   name: 'ZclConfiguratorLayout',
   methods: {
-    collapseOnResize(e) {
-      if (e.currentTarget.innerWidth < 750) {
-        this.miniState = true
+    collapseOnResize(e){
+      if(e.currentTarget.innerWidth < 750){
+        this.miniState = true;
       }
     },
-    setSelectedEndpoint(value) {
+    setSelectedEndpoint(value){
       this.$store.dispatch('zap/updateSelectedEndpointType', {
         endpointType: this.endpointType[value],
-        deviceTypeRef: this.endpointDeviceTypeRef[this.endpointType[value]],
+        deviceTypeRef:
+          this.endpointDeviceTypeRef[this.endpointType[value]],
       })
       this.$store.dispatch('zap/updateSelectedEndpoint', value)
     },
@@ -141,7 +137,7 @@ export default {
   },
   mounted() {
     this.$store.dispatch('zap/clearLastSelectedDomain')
-    window.addEventListener('resize', this.collapseOnResize)
+    window.addEventListener("resize", this.collapseOnResize)
   },
   computed: {
     endpointDeviceTypeRef: {
@@ -168,23 +164,23 @@ export default {
       get() {
         return this.$store.state.zap.showPreviewTab
       },
-      set() {
+      set(){
         return this.$store.dispatch('zap/togglePreviewTab')
-      },
+      }
     },
-    endpoints: {
+    endpoints:{
       get() {
-        const endpoints = []
-        for (let id in this.endpointId) {
-          if (this.endpointId[id]) {
+        const endpoints = [];
+        for(let id in this.endpointId){
+          if(this.endpointId[id]){
             endpoints.push({
               label: `Endpoint - ${this.endpointId[id]}`,
-              value: id,
+              value: id
             })
           }
         }
-        return endpoints
-      },
+        return endpoints;
+      }
     },
     leftDrawerOpen: {
       get() {
@@ -198,7 +194,7 @@ export default {
       get() {
         return this.$store.state.zap.miniState
       },
-      set(miniState) {
+      set(miniState){
         this.$store.dispatch('zap/setMiniState', miniState)
       },
     },
@@ -216,8 +212,9 @@ export default {
   data() {
     return {
       isExpanded: false,
-      globalOptionsDialog: false,
-      zclExtensionDialog: false,
+      globalOptionsDialog:false,
+      zclExtensionDialog:false
+
     }
   },
   components: {
@@ -225,7 +222,7 @@ export default {
     ZclEndpointManager,
     ZclClusterManager,
     InitialContent,
-    ZclExtensionDialog,
+    ZclExtensionDialog
   },
 }
 </script>

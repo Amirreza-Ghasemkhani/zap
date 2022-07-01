@@ -42,12 +42,6 @@ export default {
     return {
       columns: [
         {
-          name: 'ID',
-          label: 'ID',
-          align: 'left',
-          field: 'id',
-        },
-        {
           name: 'CATEGORY',
           align: 'left',
           label: 'Category',
@@ -72,22 +66,10 @@ export default {
           field: 'type',
         },
         {
-          name: 'CRC',
-          align: 'left',
-          label: 'CRC',
-          field: 'crc',
-        },
-        {
           name: 'VERSION',
           align: 'left',
           label: 'Version',
           field: 'version',
-        },
-        {
-          name: 'PARENT_PACKAGE_REF',
-          align: 'left',
-          label: 'Parent Package ID',
-          field: 'parentId',
         },
       ],
     }

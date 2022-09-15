@@ -529,16 +529,21 @@ export function loadZclClusterToUcComponentDependencyMap(state, map) {
     Vue.set(state.studio, 'zclSdkExtClusterToUcComponentMap', map)
 }
 
+// This function will set endpoint data to allEndpointsData state
 export function setAllEndpointsData(state, value) {
-  Vue.set(state.allEndpointsData, value.endpointId,
-    { 'selectedservers': value.servers,
-      'selectedReporting': value.report,
-      'selectedAttributes': value.attr,
-      id: value.endpointId })
+  if (!state.allEndpointsData.find(item => item.id == value.endpointId)) {
+    Vue.set(state.allEndpointsData, `endpointData${value.endpointId}`,
+      {
+        'selectedServers': value.servers,
+        'selectedReporting': value.report,
+        'selectedAttributes': value.attr,
+        id: value.endpointId
+      })
+  }
 }
 
-export function updateIsProfileIdShown (state, value) {
-  value == 0 ? state.isProfileIdShown  = false : state.isProfileIdShown  = true
+export function updateIsProfileIdShown(state, value) {
+  value == 0 ? state.isProfileIdShown = false : state.isProfileIdShown = true
 }
 
 // This function will update the cluster stage if cluster changed it will update the endpoint data
@@ -549,4 +554,10 @@ export function updateIsClusterOptionChanged(state, value) {
 // This function will toggle showEndpointData state and save that state
 export function toggleShowEndpoint(state, item) {
   Vue.set(state.showEndpointData, item.id, item.value)
+}
+
+// Delete Endpoint Summary Data from list
+export function deleteEndpointSummeryData(state, item) {
+  let index = state.allEndpointsData.findIndex(data => data.id == item);
+  state.allEndpointsData.splice(index, 1)
 }

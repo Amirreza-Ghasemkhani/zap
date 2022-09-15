@@ -42,14 +42,11 @@ limitations under the License.
       />
     </div>
     <q-separator class="q-mini-drawer-hide" />
-    <template v-for="(child, index) in endpoints">
-      <zcl-endpoint-card
-        v-bind:key="index"
-        v-bind:endpointReference="child.id"
-        class="q-mini-drawer-hide"
-      >
-      </zcl-endpoint-card>
-    </template>
+    <zcl-endpoint-card v-for="child, index in endpoints" :key="`${child.id}${index}`"
+      v-bind:endpointReference="child.id"
+      class="q-mini-drawer-hide"
+    >
+    </zcl-endpoint-card>
 
     <q-dialog v-model="newEndpointDialog" class="background-color:transparent">
       <zcl-create-modify-endpoint

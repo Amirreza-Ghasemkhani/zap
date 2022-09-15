@@ -230,13 +230,6 @@ export default {
     },
     requiredAttributes: {
       get() {
-        console.log(
-          this.relevantAttributeData.filter(
-            (attribute) =>
-              !attribute.isOptional ||
-              this.requiredDeviceTypeAttributes.includes(attribute.id)
-          )
-        )
         return this.relevantAttributeData
           .filter(
             (attribute) =>

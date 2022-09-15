@@ -802,7 +802,7 @@ export function generateAllEndpointsData(context, endpointData) {
         }
       }
     })
-    server = [...enabledServers, ...enabledServers]
+    server = [...enabledServers, ...enabledClients]
   })
 
   let promise2 = Vue.prototype.$serverGet(endpointData.attributesRequestUrl).then((res) => {

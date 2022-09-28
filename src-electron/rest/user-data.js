@@ -111,11 +111,18 @@ function httpPostCluster(db) {
         flag
       )
 
-      if (insertDefault) {
+      // Insert cluster's defaults when insertDefault variable is not undefined/null or when the flag is true 
+      if (insertDefault || flag) {
         await queryConfig.insertClusterDefaults(db, endpointTypeId, packageId, {
           clusterRef: id,
           side: side,
         })
+      }
+
+      // Delete the disabled cluster's attributes if the flag is false which means the user disabled the cluster
+      if(!flag){
+        let { endpointTypeClusterId } = await queryConfig.selectEnabledClusterState(db, endpointTypeId, id, side, 0);
+        await queryAttribute.deleteEndpointTypeAttributes(db, endpointTypeClusterId, endpointTypeId);
       }
 
       response

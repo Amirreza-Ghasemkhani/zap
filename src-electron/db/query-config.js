@@ -116,6 +116,38 @@ async function selectClusterState(db, endpointTypeId, clusterRef, side) {
 }
 
 /**
+ * Promise to get a cluster's state.
+ * This must return undefined/null for if the cluster state has not been used before for the endpointType
+ * @param {*} db
+ * @param {*} endpointTypeId
+ * @param {*} clusterRef
+ * @param {*} side
+ * @param {*} enabled
+ */
+async function selectEnabledClusterState(db, endpointTypeId, clusterRef, side, enabled) {
+  return dbApi
+    .dbGet(
+      db,
+      `
+    SELECT
+      ENDPOINT_TYPE_CLUSTER_ID,
+      ENDPOINT_TYPE_REF,
+      CLUSTER_REF,
+      SIDE,
+      ENABLED
+    FROM ENDPOINT_TYPE_CLUSTER
+    WHERE
+      ENDPOINT_TYPE_REF = ? AND
+      CLUSTER_REF = ? AND
+      ENABLED = ? AND
+      SIDE = ?
+    `,
+      [endpointTypeId, clusterRef, enabled, side]
+    )
+    .then(dbMapping.map.endpointTypeCluster)
+}
+
+/**
  * Promise to get clusters' states for all endpoints
  * This must return undefined/null for if the cluster state has not been used before for the endpointType
  * @param {*} db
@@ -1207,6 +1239,7 @@ async function setClusterIncluded(
 // exports
 exports.insertOrReplaceClusterState = insertOrReplaceClusterState
 exports.selectClusterState = selectClusterState
+exports.selectEnabledClusterState = selectEnabledClusterState
 exports.selectClusterStatesForAllEndpoints = selectClusterStatesForAllEndpoints
 exports.insertOrUpdateAttributeState = insertOrUpdateAttributeState
 exports.insertOrUpdateCommandState = insertOrUpdateCommandState

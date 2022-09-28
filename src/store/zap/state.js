@@ -150,8 +150,7 @@ export default function () {
       // a list of dict: { "clusterCode": "$zcl_cluster-$zcl_role", "value": ["$uc_component_id"] }
       zclSdkExtClusterToUcComponentMap: [],
     },
-    allEndpointsData: {},
-    isClusterOptionChanged: false,
+    allEndpointsData: [],
     showEndpointData: {},
     deviceTypeRefAndDeviceIdPair: {
       deviceTypeRef: null,

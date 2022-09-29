@@ -363,6 +363,7 @@ export default {
         endpointTypeId: endpointTypeReference,
         updatedKey: RestApi.updateKey.deviceTypeRef,
         updatedValue: this.deviceTypeRefAndDeviceIdPair.deviceTypeRef,
+        deletePreviousAffiliates: true,
       })
 
       this.$store.dispatch('zap/updateEndpoint', {

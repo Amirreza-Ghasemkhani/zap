@@ -21,6 +21,8 @@
  * @module REST API: endpoint
  */
 const queryEndpointType = require('../db/query-endpoint-type.js')
+const queryAttribute = require('../db/query-attribute.js')
+const queryCluster = require('../db/query-cluster.js')
 const queryEndpoint = require('../db/query-endpoint.js')
 const queryConfig = require('../db/query-config.js')
 const validation = require('../validation/validation.js')
@@ -175,6 +177,13 @@ function httpPatchEndpointType(db) {
   return async (request, response) => {
     let { endpointTypeId, updatedKey, updatedValue } = request.body
     let sessionId = request.zapSessionId
+
+    // Check if user wants to delete attributes and cluters from previous device
+    // FALSE is the default value of the IF statement just in case deletePreviousAffiliates property is undefined
+    if(request.body.deletePreviousAffiliates || false){
+      await queryAttribute.deleteAttributesByEndpointTypeRef(db, endpointTypeId)
+      await queryCluster.deleteClustersByEndpointTypeRef(db, endpointTypeId)
+    }
 
     await queryConfig.updateEndpointType(
       db,

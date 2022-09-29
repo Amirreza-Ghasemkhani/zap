@@ -160,5 +160,24 @@ ORDER BY
     .then((rows) => rows.map(mapFunction))
 }
 
-exports.selectClusterDetailsFromEnabledClusters =
-  selectClusterDetailsFromEnabledClusters
+/**
+ * Promises to delete clusters by their endpoint-type-ref.
+ *
+ * @export
+ * @param {*} db
+ * @param {*} endpointTypeRef
+ * @returns Promise to delete useless clusters by their endpoint type ref.
+ */
+ async function deleteClustersByEndpointTypeRef(
+  db,
+  endpointTypeRef
+){
+  return dbApi.dbRemove(
+    db,
+    `DELETE FROM ENDPOINT_TYPE_CLUSTER WHERE ENDPOINT_TYPE_REF = ?`,
+    [ endpointTypeRef ]
+  )
+}
+
+exports.selectClusterDetailsFromEnabledClusters = selectClusterDetailsFromEnabledClusters
+exports.deleteClustersByEndpointTypeRef = deleteClustersByEndpointTypeRef

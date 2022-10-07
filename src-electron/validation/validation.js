@@ -81,6 +81,9 @@ function validateSpecificAttribute(endpointAttribute, attribute) {
         defaultAttributeIssues.push('Invalid Integer')
       if (!checkAttributeBoundsInteger(attribute, endpointAttribute))
         defaultAttributeIssues.push('Out of range')
+    } else if (types.isArray(attribute.type)) {
+      if (!isValidArray(endpointAttribute.defaultValue))
+        defaultAttributeIssues.push('Invalid Array')
     } else {
       if (!isValidNumberString(endpointAttribute.defaultValue))
         defaultAttributeIssues.push('Invalid Integer')
@@ -130,6 +133,10 @@ function isValidNumberString(value) {
 
 function isValidSignedNumberString(value) {
   return /^(0x)?[\dA-F]+$/i.test(value) || Number.isInteger(Number(value))
+}
+
+function isValidArray(value) {
+  return !/^(.*[^,])\,$/i.test(value)
 }
 
 function isValidFloat(value) {
@@ -196,6 +203,7 @@ exports.validateSpecificAttribute = validateSpecificAttribute
 exports.validateSpecificEndpoint = validateSpecificEndpoint
 exports.isValidNumberString = isValidNumberString
 exports.isValidFloat = isValidFloat
+exports.isValidArray = isValidArray
 exports.extractFloatValue = extractFloatValue
 exports.extractIntegerValue = extractIntegerValue
 exports.getBoundsInteger = getBoundsInteger

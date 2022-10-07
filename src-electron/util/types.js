@@ -293,6 +293,20 @@ function isSignedInteger(type) {
 }
 
 /**
+ * Returns true if a given ZCL type is a array.
+ * @param {*} type
+ * @returns true if type is array, false otherwise
+ */
+function isArray(type) {
+  switch (type) {
+    case 'array':
+      return true
+    default:
+      return false
+  }
+}
+
+/**
  * Checks if type is a one-byte lengh string.
  *
  * @param {*} type
@@ -322,5 +336,6 @@ exports.convertToCliType = convertToCliType
 exports.isString = isString
 exports.isFloat = isFloat
 exports.isSignedInteger = isSignedInteger
+exports.isArray = isArray
 exports.convertIntToBigEndian = convertIntToBigEndian
 exports.convertFloatToBigEndian = convertFloatToBigEndian

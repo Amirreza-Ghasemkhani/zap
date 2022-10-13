@@ -17,8 +17,10 @@ limitations under the License.
 <template>
   <div>
     <q-card
+      class="v-step-5"
       :bordered="isSelectedEndpoint"
       @click="setSelectedEndpointType(endpointReference)"
+      :data-test="`endpoint-card-${getDeviceOptionLabel()}`"
     >
       <div class="q-mx-sm" style="display: flex; justify-content: space-between">
         <div class="vertical-align:middle q-pa-sm col-4">
@@ -75,7 +77,7 @@ limitations under the License.
             dense
             icon="mdi-chevron-up"
             size="sm"
-            data-test="endpoint-body-toggler-hide"
+            :data-test="`endpoint-body-toggler-hide-${getDeviceOptionLabel()}`"
           />
           <q-btn
             v-else
@@ -84,7 +86,7 @@ limitations under the License.
             icon="mdi-chevron-down"
             @click.stop="toggleShowAllInformationOfEndpoint(true)"
             size="sm"
-            data-test="endpoint-body-toggler-show"
+            :data-test="`endpoint-body-toggler-show-${getDeviceOptionLabel()}`"
           />
         </div>
       </div>
@@ -220,6 +222,7 @@ import ZclCreateModifyEndpoint from './ZclCreateModifyEndpoint.vue'
 import CommonMixin from '../util/common-mixin'
 import * as Storage from '../util/storage'
 import restApi from '../../src-shared/rest-api'
+import { log } from 'handlebars'
 
 export default {
   name: 'ZclEndpointCard',
@@ -371,11 +374,6 @@ export default {
         return this.selectedEndpointId == this.endpointReference
       },
     },
-    isClusterOptionChanged: {
-      get() {
-        return this.$store.state.zap.isClusterOptionChanged
-      },
-    },
     getEndpointInformation: {
       get() {
         return this.$store.state.zap.showEndpointData[this.endpointReference]
@@ -385,18 +383,12 @@ export default {
       get() {
         return this.$store.state.zap.allEndpointsData[`endpointData${this.endpointReference}`]
       }
-    }
+    },
   },
   watch: {
     isSelectedEndpoint(newValue) {
       if (newValue) {
         this.$store.commit('zap/toggleShowEndpoint', { id: this.endpointReference, value: true })
-      }
-    },
-    isClusterOptionChanged(val) {
-      if (val) {
-        this.getEndpointCardData()
-        this.$store.commit('zap/updateIsClusterOptionChanged', false)
       }
     },
   },

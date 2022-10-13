@@ -128,10 +128,12 @@ limitations under the License.
               props.row.manufacturerCode
                 ? asHex(props.row.manufacturerCode, 4)
                 : '---'
+              /* incorporate one step here */
             }}
           </q-td>
           <q-td key="enable" :props="props">
             <q-select
+              class="v-step-8"
               :v-model="getClusterEnabledStatus(props.row.id)"
               :value="getClusterEnabledStatus(props.row.id)"
               :display-value="`${getClusterEnabledStatus(props.row.id)}`"
@@ -139,11 +141,13 @@ limitations under the License.
               dense
               outlined
               @input="handleClusterSelection(props.row.id, $event)"
+              data-test="cluster-enable-input"
             />
           </q-td>
           <q-td key="configure" :props="props">
             <q-btn
               flat
+              class="v-step-9"
               :color="isClusterEnabled(props.row.id) ? 'primary' : 'grey'"
               dense
               :disable="!isClusterEnabled(props.row.id)"
@@ -163,7 +167,7 @@ limitations under the License.
         <q-card-section>
           <div class="text-h6">Enable All Clusters</div>
           Enabling all clusters may cause the ZCL configuration to go into an
-          invalid state. Are you sure want to enable all clusters?
+          invalid state. Are you sure you want to enable all clusters?
         </q-card-section>
         <q-card-actions>
           <q-btn label="Cancel" v-close-popup class="col" />
@@ -182,6 +186,7 @@ limitations under the License.
 </template>
 <script>
 import CommonMixin from '../util/common-mixin'
+import restApi from '../../src-shared/rest-api'
 
 export default {
   name: 'ZclDomainClusterView',
@@ -345,7 +350,15 @@ export default {
           this.enableRequiredComponents(id)
         })
         .then(() => {
-          this.$store.commit('zap/updateIsClusterOptionChanged', true)
+            this.$store.dispatch('zap/generateAllEndpointsData', {
+          clusterRequestUrl: `${restApi.uri.endpointTypeClusters}${
+              this.endpointType[this.selectedEndpointTypeId]
+            }`,
+          attributesRequestUrl: `${restApi.uri.endpointTypeAttributes}${
+              this.endpointType[this.selectedEndpointTypeId]
+            }`,
+          endpointId: this.selectedEndpointTypeId
+      })
         })
     },
     enableRequiredComponents(id) {
@@ -452,6 +465,14 @@ export default {
           style: 'width: 10%',
         },
       ],
+    }
+  },
+  created() {
+    // This function check you created endpoint before and right now you are in the tutorial steps, then sets cluster data
+    if (this.clusters !== undefined) {
+      if (this.clusters[0].domainName == this.$store.state.zap.domains[0]) {
+        this.$store.commit('zap/setClusterDataForTutorial', this.clusters[0])
+      }
     }
   },
 }

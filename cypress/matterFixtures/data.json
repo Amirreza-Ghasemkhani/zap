@@ -1,4 +1,5 @@
 {
+  "type":"matter",
   "endpoint1": "Matter Bridge (0x000E)",
   "endpoint2": "Matter Bridged Device (0x0013)",
   "endpoint3": "Matter Color Temperature Light (0x010C)",
@@ -32,5 +33,7 @@
   "int8clusterpath": "1",
   "booleanclusterpath": "1",
   "booleaninputpath": "1",
-  "bitmapinputpath": "5"
+  "bitmapinputpath": "5",
+  "enbledAttributesDir":"6",
+  "enabledClustersDir":"5"
 }

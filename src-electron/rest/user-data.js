@@ -119,10 +119,10 @@ function httpPostCluster(db) {
         })
       }
 
-      // Delete the disabled cluster's attributes if the flag is false which means the user disabled the cluster
+      // Update the disabled cluster's attributes if the flag is false which means the user disabled the cluster
       if(!flag){
         let { endpointTypeClusterId } = await queryConfig.selectEnabledClusterState(db, endpointTypeId, id, side, 0);
-        await queryAttribute.deleteEndpointTypeAttributes(db, endpointTypeClusterId, endpointTypeId);
+        await queryAttribute.updateEndpointTypeAttributes(db, endpointTypeClusterId, endpointTypeId);
       }
 
       response

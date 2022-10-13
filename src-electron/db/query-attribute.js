@@ -139,21 +139,21 @@ async function duplicateEndpointTypeAttribute(
 }
 
 /**
- * Promises to delete endpoint type attributes by their endpoint-type-ref and cluster-ref.
+ * Promises to update endpoint type attributes by their endpoint-type-ref and cluster-ref.
  *
  * @export
  * @param {*} db
  * @param {*} endpointTypeRef
- * @returns Promise to delete endpoint type.
+ * @returns Promise to update endpoint type.
  */
-async function deleteEndpointTypeAttributes(
+async function updateEndpointTypeAttributes(
   db,
   clusterRef,
   endpointTypeRef
 ){
   return dbApi.dbUpdate(
     db,
-    `DELETE FROM ENDPOINT_TYPE_ATTRIBUTE WHERE ENDPOINT_TYPE_REF = ? AND ENDPOINT_TYPE_CLUSTER_REF = ?`,
+    `UPDATE ENDPOINT_TYPE_ATTRIBUTE SET INCLUDED = 0 WHERE ENDPOINT_TYPE_REF = ? AND ENDPOINT_TYPE_CLUSTER_REF = ?`,
     [ endpointTypeRef, clusterRef ]
   )
 }
@@ -923,4 +923,4 @@ exports.selectGlobalAttributeDefaults = selectGlobalAttributeDefaults
 exports.selectAttributeByCode = selectAttributeByCode
 exports.duplicateEndpointTypeAttribute = duplicateEndpointTypeAttribute
 exports.selectEndpointTypeAttributesByEndpointTypeRefAndClusterRef = selectEndpointTypeAttributesByEndpointTypeRefAndClusterRef
-exports.deleteEndpointTypeAttributes = deleteEndpointTypeAttributes
+exports.updateEndpointTypeAttributes = updateEndpointTypeAttributes

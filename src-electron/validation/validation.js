@@ -83,7 +83,7 @@ function validateSpecificAttribute(endpointAttribute, attribute) {
         defaultAttributeIssues.push('Out of range')
     } else if (types.isArray(attribute.type)) {
       if (!isValidArray(endpointAttribute.defaultValue))
-        defaultAttributeIssues.push('Invalid Array')
+        defaultAttributeIssues.push('Valid format is : ["a","b",1] or [["a","b"],[1,2]] or {"a":["b","c"]}')
     } else {
       if (!isValidNumberString(endpointAttribute.defaultValue))
         defaultAttributeIssues.push('Invalid Integer')
@@ -136,7 +136,12 @@ function isValidSignedNumberString(value) {
 }
 
 function isValidArray(value) {
-  return !/^(.*[^,])\,$/i.test(value)
+  try{
+    JSON.parse(value)
+    return true
+  }catch(e){
+    return false
+  }
 }
 
 function isValidFloat(value) {

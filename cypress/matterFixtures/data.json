@@ -28,12 +28,12 @@
   "outOfRangeAmount1": "9999999999999999",
   "availableAttributes1": "28",
   "availableClusters1": "5",
-  "enum8inputpath": "2",
-  "int16inputpath": "1",
-  "int8clusterpath": "1",
-  "booleanclusterpath": "1",
-  "booleaninputpath": "1",
-  "bitmapinputpath": "5",
+  "enum8InputPath": "2",
+  "int16InputPath": "1",
+  "int8ClusterPath": "1",
+  "booleanClusterPath": "1",
+  "booleanInputPath": "1",
+  "bitmapInputPath": "5",
   "enbledAttributesDir":"6",
   "enabledClustersDir":"5"
 }

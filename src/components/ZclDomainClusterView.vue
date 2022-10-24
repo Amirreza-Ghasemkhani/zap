@@ -141,6 +141,7 @@ limitations under the License.
               dense
               outlined
               @input="handleClusterSelection(props.row.id, $event)"
+              data-test="cluster-enable-input"
             />
           </q-td>
           <q-td key="configure" :props="props">
@@ -185,6 +186,7 @@ limitations under the License.
 </template>
 <script>
 import CommonMixin from '../util/common-mixin'
+import restApi from '../../src-shared/rest-api'
 
 export default {
   name: 'ZclDomainClusterView',
@@ -348,7 +350,15 @@ export default {
           this.enableRequiredComponents(id)
         })
         .then(() => {
-          this.$store.commit('zap/updateIsClusterOptionChanged', true)
+            this.$store.dispatch('zap/generateAllEndpointsData', {
+          clusterRequestUrl: `${restApi.uri.endpointTypeClusters}${
+              this.endpointType[this.selectedEndpointTypeId]
+            }`,
+          attributesRequestUrl: `${restApi.uri.endpointTypeAttributes}${
+              this.endpointType[this.selectedEndpointTypeId]
+            }`,
+          endpointId: this.selectedEndpointTypeId
+      })
         })
     },
     enableRequiredComponents(id) {

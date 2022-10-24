@@ -114,7 +114,6 @@ export default {
       if (this.$serverGet != null) {
         this.$serverGet(restApi.uri.uiOptions).then((res) => {
           this.$store.commit('zap/updateIsProfileIdShown', res.data.showProfileId)
-          console.log(res.data);
         })
       }
 

@@ -310,19 +310,7 @@ export function addEndpoint(context, newEndpointContext) {
   return Vue.prototype
     .$serverPost(restApi.uri.endpoint, newEndpointContext)
     .then((res) => {
-      let arg = res.data
-      context.commit('addEndpoint', {
-        id: arg.id,
-        endpointId: arg.endpointId,
-        endpointTypeRef: arg.endpointType,
-        networkId: arg.networkId,
-        profileId: arg.profileId,
-        deviceIdentifier: arg.deviceId,
-        endpointVersion: arg.endpointVersion,
-        endpointIdValidationIssues: arg.validationIssues.endpointId,
-        networkIdValidationIssues: arg.validationIssues.networkId,
-      })
-      return arg
+      return res.data
     })
 }
 
@@ -360,7 +348,7 @@ export function duplicateEndpoint(context, {endpointId, endpointIdentifier, endp
     .$serverPost(restApi.uri.duplicateEndpoint, { id: endpointId, endpointIdentifier: endpointIdentifier, endpointTypeId: endpointTypeId })
     .then((response) => {
     return response
-    }) 
+    })
 }
 
 export function deleteEndpointType(context, endpointTypeId) {
@@ -777,7 +765,7 @@ export function loadZclClusterToUcComponentDependencyMap(context) {
 
 export function shareClusterStatesAcrossEndpoints(context, data) {
   let { endpointTypeIdList } = data
-  Vue.prototype
+  return Vue.prototype
     .$serverPost(restApi.uri.shareClusterStatesAcrossEndpoints, {
       endpointTypeIdList,
     })
@@ -799,12 +787,11 @@ export function generateAllEndpointsData(context, endpointData) {
           enabledClients.push(record.clusterRef)
         } else {
           enabledServers.push(record.clusterRef)
-          
-          }
         }
-      })
-      server = [...enabledServers, ...enabledClients]
+      }
     })
+    server = [...enabledServers, ...enabledClients]
+  })
 
   let promise2 = Vue.prototype.$serverGet(endpointData.attributesRequestUrl).then((res) => {
 

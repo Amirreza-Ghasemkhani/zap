@@ -44,7 +44,7 @@ limitations under the License.
     <q-separator class="q-mini-drawer-hide" />
       <zcl-endpoint-card
         v-for="(child, index) in endpoints"
-        v-bind:key="index"
+        v-bind:key="child.id + index"
         v-bind:endpointReference="child.id"
         class="q-mini-drawer-hide"
       >

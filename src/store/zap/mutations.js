@@ -529,13 +529,17 @@ export function selectZapConfig(state, val) {
   state.isZapConfigSelected = val
 }
 
+// This function will set endpoint data to allEndpointsData state
 export function setAllEndpointsData(state, value) {
-  Vue.set(state.allEndpointsData, value.endpointId, {
-    selectedservers: value.servers,
-    selectedReporting: value.report,
-    selectedAttributes: value.attr,
-    id: value.endpointId,
-  })
+  if (!state.allEndpointsData.find(item => item.id == value.endpointId)) {
+    Vue.set(state.allEndpointsData, `endpointData${value.endpointId}`,
+      {
+        'selectedServers': value.servers,
+        'selectedReporting': value.report,
+        'selectedAttributes': value.attr,
+        id: value.endpointId
+      })
+  }
 }
 
 // This function change state of showCreateModifyEndpoint and will show or hide create endpoint modal
@@ -588,7 +592,8 @@ export function toggleShowEndpoint(state, item) {
   Vue.set(state.showEndpointData, item.id, item.value)
 }
 
-// This function will update the cluster stage if cluster changed it will update the endpoint data
-export function updateIsClusterOptionChanged(state, value) {
-  state.isClusterOptionChanged = value
+// Delete Endpoint Summary Data from list
+export function deleteEndpointSummeryData(state, item) {
+  let index = state.allEndpointsData.findIndex(data => data.id == item);
+  state.allEndpointsData.splice(index, 1)
 }

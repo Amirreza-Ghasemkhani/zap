@@ -20,6 +20,7 @@ limitations under the License.
       class="v-step-5"
       :bordered="isSelectedEndpoint"
       @click="setSelectedEndpointType(endpointReference)"
+      :data-test="`endpoint-card-${getDeviceOptionLabel()}`"
     >
       <div class="q-mx-sm" style="display: flex; justify-content: space-between">
         <div class="vertical-align:middle q-pa-sm col-4">
@@ -48,7 +49,7 @@ limitations under the License.
             v-close-popup
             size="sm"
             icon="delete"
-            @click="handleDeletionDialog"
+            @click.stop="handleDeletionDialog"
             data-test="delete-endpoint"
           >
             <q-tooltip>
@@ -62,7 +63,7 @@ limitations under the License.
             icon="edit"
             size="sm"
             v-close-popup
-            @click="modifyEndpointDialog = !modifyEndpointDialog"
+            @click.stop="modifyEndpointDialog = !modifyEndpointDialog"
             data-test="edit-endpoint"
           >
             <q-tooltip>
@@ -76,7 +77,7 @@ limitations under the License.
             dense
             icon="mdi-chevron-up"
             size="sm"
-            data-test="endpoint-body-toggler-hide"
+            :data-test="`endpoint-body-toggler-hide-${getDeviceOptionLabel()}`"
           />
           <q-btn
             v-else
@@ -85,7 +86,7 @@ limitations under the License.
             icon="mdi-chevron-down"
             @click.stop="toggleShowAllInformationOfEndpoint(true)"
             size="sm"
-            data-test="endpoint-body-toggler-show"
+            :data-test="`endpoint-body-toggler-show-${getDeviceOptionLabel()}`"
           />
         </div>
       </div>
@@ -126,7 +127,7 @@ limitations under the License.
             <strong>Enabled Clusters</strong>
           </div>
           <div class="col-6" data-test="endpoint-enabled-clusters-amount">
-            {{ selectedServers.length }}
+            {{ getEndpointSummaryData.selectedServers.length }}
           </div>
         </q-item>
         <q-item class="row">
@@ -134,7 +135,7 @@ limitations under the License.
             <strong>Enabled Attributes</strong>
           </div>
           <div class="col-6" data-test="endpoint-enabled-attributes-amount">
-            {{ selectedAttributes.length }}
+            {{ getEndpointSummaryData.selectedAttributes.length }}
           </div>
         </q-item>
         <q-item class="row">
@@ -142,7 +143,7 @@ limitations under the License.
             <strong>Enabled Reporting</strong>
           </div>
           <div class="col-6">
-            {{ selectedReporting.length }}
+            {{ getEndpointSummaryData.selectedReporting.length }}
           </div>
         </q-item>
       </q-list>
@@ -220,10 +221,8 @@ limitations under the License.
 import ZclCreateModifyEndpoint from './ZclCreateModifyEndpoint.vue'
 import CommonMixin from '../util/common-mixin'
 import * as Storage from '../util/storage'
-import Vue from 'vue'
 import restApi from '../../src-shared/rest-api'
-import { setAttributeStateLists, setClusterList } from '../store/zap/actions'
-import * as Util from '../util/util'
+import { log } from 'handlebars'
 
 export default {
   name: 'ZclEndpointCard',
@@ -237,9 +236,6 @@ export default {
       confirmDeleteEndpointDialog: false,
       deleteingleEndpointDialog: false,
       showAllInformationOfEndpoint: false,
-      selectedServers: [],
-      selectedAttributes: [],
-      selectedReporting: [],
     }
   },
   methods: {
@@ -304,52 +300,23 @@ export default {
           'zap/deleteEndpointType',
           this.endpointType[endpointReference]
         )
+      }).then(() => {
+        this.$store.commit('zap/deleteEndpointSummeryData', endpointReference)
       })
     },
     toggleShowAllInformationOfEndpoint(value) {
       this.$store.commit('zap/toggleShowEndpoint', { id: this.endpointReference, value: value })
     },
     getEndpointCardData() {
-      Vue.prototype
-        .$serverGet(
-          `${restApi.uri.endpointTypeClusters}${
+      this.$store.dispatch('zap/generateAllEndpointsData', {
+        clusterRequestUrl: `${restApi.uri.endpointTypeClusters}${
             this.endpointType[this.endpointReference]
-          }`
-        )
-        .then((res) => {
-          let enabledClients = []
-          let enabledServers = []
-          res.data.forEach((record) => {
-            if (record.enabled) {
-              if (record.side === 'client') {
-                enabledClients.push(record.clusterRef)
-              } else {
-                enabledServers.push(record.clusterRef)
-              }
-            }
-          })
-          this.selectedServers = [...enabledServers, ...enabledClients]
-        })
-
-      Vue.prototype
-        .$serverGet(
-          `${restApi.uri.endpointTypeAttributes}${
+          }`,
+        attributesRequestUrl: `${restApi.uri.endpointTypeAttributes}${
             this.endpointType[this.endpointReference]
-          }`
-        )
-        .then((res) => {
-          this.selectedAttributes = []
-          this.selectedReporting = []
-          res.data.forEach((record) => {
-            let resolvedReference = Util.cantorPair(
-              record.attributeRef,
-              record.clusterRef
-            )
-            if (record.included) this.selectedAttributes.push(resolvedReference)
-            if (record.includedReportable)
-              this.selectedReporting.push(resolvedReference)
-          })
-        })
+          }`,
+        endpointId: this.endpointReference
+      })
     },
   },
   computed: {
@@ -407,16 +374,16 @@ export default {
         return this.selectedEndpointId == this.endpointReference
       },
     },
-    isClusterOptionChanged: {
-      get() {
-        return this.$store.state.zap.isClusterOptionChanged
-      },
-    },
     getEndpointInformation: {
       get() {
         return this.$store.state.zap.showEndpointData[this.endpointReference]
       }
-    }
+    },
+    getEndpointSummaryData: {
+      get() {
+        return this.$store.state.zap.allEndpointsData[`endpointData${this.endpointReference}`]
+      }
+    },
   },
   watch: {
     isSelectedEndpoint(newValue) {
@@ -424,21 +391,12 @@ export default {
         this.$store.commit('zap/toggleShowEndpoint', { id: this.endpointReference, value: true })
       }
     },
-    isClusterOptionChanged(val) {
-      if (val) {
-        this.getEndpointCardData()
-        this.$store.commit('zap/updateIsClusterOptionChanged', false)
-      }
-    },
   },
   created() {
     if (this.$serverGet != null) {
-      this.selectedServers = []
-      this.selectedAttributes = []
-      this.selectedReporting = []
       this.getEndpointCardData()
     }
-  },
+  }
 }
 </script>
 

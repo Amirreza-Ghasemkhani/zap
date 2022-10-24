@@ -217,6 +217,133 @@ ${
 }
 
 /**
+ * Retrieve clusters from multiple endpoint types, calculating along the way the
+ * number of how many times a cluster is present in the given endpoint types.
+ *
+ * @param {*} db
+ * @param {*} endpointTypes
+ * @param {*} clusterId
+ * @returns Promise that resolves with the data that should go into the external form.
+ */
+async function selectAllClustersDetailsFromEndpointTypesAndClusterId(db, endpointTypeIds, clusterId) {
+  let mapFunction = (x) => {
+    return {
+      id: x.CLUSTER_ID,
+      name: x.NAME,
+      code: x.CODE,
+      description: x.DESCRIPTION,
+      define: x.DEFINE,
+      mfgCode: x.MANUFACTURER_CODE,
+      side: x.SIDE,
+      enabled: x.ENABLED,
+      endpointClusterId: x.ENDPOINT_TYPE_CLUSTER_ID,
+      endpointCount: x['COUNT(*)'],
+    }
+  }
+
+  let doOrderBy = true
+  return dbApi
+    .dbAll(
+      db,
+      `
+SELECT
+  CLUSTER.CLUSTER_ID,
+  CLUSTER.CODE,
+  CLUSTER.DESCRIPTION,
+  CLUSTER.MANUFACTURER_CODE,
+  CLUSTER.NAME,
+  CLUSTER.DEFINE,
+  ENDPOINT_TYPE_CLUSTER.SIDE,
+  ENDPOINT_TYPE_CLUSTER.ENABLED,
+  ENDPOINT_TYPE_CLUSTER.ENDPOINT_TYPE_CLUSTER_ID,
+  COUNT(*)
+FROM
+  CLUSTER
+INNER JOIN
+  ENDPOINT_TYPE_CLUSTER
+ON
+  CLUSTER.CLUSTER_ID = ENDPOINT_TYPE_CLUSTER.CLUSTER_REF
+WHERE
+  ENDPOINT_TYPE_CLUSTER.ENDPOINT_TYPE_REF IN (${endpointTypeIds})
+AND
+  CLUSTER.CLUSTER_ID = ${clusterId}
+AND
+  ENDPOINT_TYPE_CLUSTER.SIDE IS NOT "" AND ENDPOINT_TYPE_CLUSTER.ENABLED = 1
+GROUP BY
+  NAME, SIDE
+${
+  doOrderBy
+    ? 'ORDER BY CLUSTER.MANUFACTURER_CODE, CLUSTER.CODE, CLUSTER.DEFINE'
+    : ''
+}`
+    )
+    .then((rows) => rows.map(mapFunction))
+}
+
+/**
+ * Retrieve clusters id with endpointTypeIds in it which are object of ENDPOINT_TYPE_CLUSTER
+ * in this way we can know how many endpointTypes have a same cluster with Ids, in a grouped and clean object
+ * 
+ * @param {*} db
+ * @param {*} endpointTypes
+ * @returns Promise that resolves with the data that should go into the external form.
+ */
+async function getEndpointTypeIdsWithInCommonCLusters(db, endpointTypes) {
+  let endpointTypeIds = endpointTypes.map((ep) => ep.endpointTypeId).toString()
+
+  return dbApi
+    .dbAll(
+      db,
+      `
+        SELECT A.ENDPOINT_TYPE_CLUSTER_ID AS A_ID, A.CLUSTER_REF, A.ENDPOINT_TYPE_REF, A.ENABLED, A.SIDE, B.ENDPOINT_TYPE_CLUSTER_ID AS B_ID,B.SIDE,B.ENABLED
+        FROM
+          ENDPOINT_TYPE_CLUSTER A, ENDPOINT_TYPE_CLUSTER B
+        WHERE
+          A.ENDPOINT_TYPE_REF IN (${endpointTypeIds})
+        AND
+          B.ENDPOINT_TYPE_REF IN (${endpointTypeIds})
+        AND
+          A.CLUSTER_REF = B.CLUSTER_REF
+        AND
+          A.ENABLED = B.ENABLED
+        AND
+          A.SIDE = B.SIDE
+        AND
+          A_ID != B_ID
+        AND
+          A.SIDE IS NOT "" 
+        AND 
+          A.ENABLED = 1
+        AND
+          B.SIDE IS NOT ""
+        ORDER BY
+          A.CLUSTER_REF`
+    )
+    .then((rows) => {
+      /*
+        returns {
+          'clusterId' : {
+            'endpointTypeId' : []
+            ...
+          }
+          ...
+        }
+      */
+      let groupedEndpointTypes = {}
+      for (let x of rows){
+        if (!groupedEndpointTypes.hasOwnProperty(x.CLUSTER_REF))
+          groupedEndpointTypes[x.CLUSTER_REF] = {}
+        
+        if (!groupedEndpointTypes[x.CLUSTER_REF].hasOwnProperty(x.ENDPOINT_TYPE_REF))
+          groupedEndpointTypes[x.CLUSTER_REF][x.ENDPOINT_TYPE_REF] = []
+
+        groupedEndpointTypes[x.CLUSTER_REF][x.ENDPOINT_TYPE_REF].push(x)
+      }
+      return groupedEndpointTypes
+    })
+}
+
+/**
  * Endpoint type details along with their cluster and attribute details
  *
  * @param db
@@ -559,3 +686,5 @@ exports.selectCommandDetailsFromAllEndpointTypeCluster =
 
 exports.selectClustersAndEndpointDetailsFromEndpointTypes =
   selectClustersAndEndpointDetailsFromEndpointTypes
+exports.getEndpointTypeIdsWithInCommonCLusters = getEndpointTypeIdsWithInCommonCLusters
+exports.selectAllClustersDetailsFromEndpointTypesAndClusterId = selectAllClustersDetailsFromEndpointTypesAndClusterId

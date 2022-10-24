@@ -111,11 +111,18 @@ function httpPostCluster(db) {
         flag
       )
 
-      if (insertDefault) {
+      // Insert cluster's defaults when insertDefault variable is not undefined/null or when the flag is true 
+      if (insertDefault || flag) {
         await queryConfig.insertClusterDefaults(db, endpointTypeId, packageId, {
           clusterRef: id,
           side: side,
         })
+      }
+
+      // Update the disabled cluster's attributes if the flag is false which means the user disabled the cluster
+      if(!flag){
+        let { endpointTypeClusterId } = await queryConfig.selectEnabledClusterState(db, endpointTypeId, id, side, 0);
+        await queryAttribute.updateEndpointTypeAttributes(db, endpointTypeClusterId, endpointTypeId);
       }
 
       response
@@ -444,6 +451,11 @@ function httpPostAddNewPackage(db) {
 function httpPostShareClusterStatesAcrossEndpoints(db) {
   return async (request, response) => {
     let { endpointTypeIdList } = request.body
+
+    let groupedEndpointTypes = await queryEndpointType.getEndpointTypeIdsWithInCommonCLusters(db, endpointTypeIdList.map((id) => {
+      return { endpointTypeId: id }
+    }))
+
     let sessionId = request.zapSessionId
     let packageIds = await queryPackage.getSessionPackagesByType(
       db,
@@ -453,39 +465,41 @@ function httpPostShareClusterStatesAcrossEndpoints(db) {
     packageIds = packageIds.map(function getId(item) {
       return item.id
     })
-    if (!Array.isArray(endpointTypeIdList) || endpointTypeIdList.length < 1) {
-      return response.status(StatusCodes.BAD_REQUEST).send()
-    }
 
     // Get a list of clusters enabled by multiple (>1) endpoints
-    let sharedClusterList = await queryEndpointType
-      .selectAllClustersDetailsFromEndpointTypes(
+    Object.keys(groupedEndpointTypes).forEach(async (clusterId) => {
+      let endpointTypeIds = Object.keys(groupedEndpointTypes[clusterId])
+
+      if (!Array.isArray(endpointTypeIds) || endpointTypeIds.length < 1) {
+        return response.status(StatusCodes.BAD_REQUEST).send()
+      }
+
+      let sharedClusterList = await queryEndpointType
+        .selectAllClustersDetailsFromEndpointTypesAndClusterId(
+          db,
+          endpointTypeIds,
+          clusterId
+        )
+        .then((list) => list.filter((entry) => entry.endpointCount > 1))
+        
+      let attrDefaults = await attributeDefaults(
         db,
-        endpointTypeIdList.map((id) => {
-          return { endpointTypeId: id }
-        })
+        endpointTypeIds,
+        sharedClusterList,
+        packageIds
       )
-      .then((list) => list.filter((entry) => entry.endpointCount > 1))
+      await writeAttributeDefaults(db, attrDefaults)
 
-    let attrDefaults = await attributeDefaults(
-      db,
-      endpointTypeIdList,
-      sharedClusterList,
-      packageIds
-    )
-    await writeAttributeDefaults(db, attrDefaults)
-
-    let cmdDefaults = await commandDefaults(
-      db,
-      endpointTypeIdList,
-      sharedClusterList,
-      packageIds
-    )
-    await writeCommandDefaults(db, cmdDefaults)
-
+      let cmdDefaults = await commandDefaults(
+        db,
+        endpointTypeIds,
+        sharedClusterList,
+        packageIds
+      )
+      await writeCommandDefaults(db, cmdDefaults)
+    })
     return response.status(StatusCodes.OK).json({
-      sharedClusterList,
-      sharedAttributeDefaults: attrDefaults,
+      groupedEndpointTypes: groupedEndpointTypes
     })
   }
 }

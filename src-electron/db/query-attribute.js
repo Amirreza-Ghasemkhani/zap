@@ -138,6 +138,26 @@ async function duplicateEndpointTypeAttribute(
   )
 }
 
+/**
+ * Promises to update endpoint type attributes by their endpoint-type-ref and cluster-ref.
+ *
+ * @export
+ * @param {*} db
+ * @param {*} endpointTypeRef
+ * @returns Promise to update endpoint type.
+ */
+async function updateEndpointTypeAttributes(
+  db,
+  clusterRef,
+  endpointTypeRef
+){
+  return dbApi.dbUpdate(
+    db,
+    `UPDATE ENDPOINT_TYPE_ATTRIBUTE SET INCLUDED = 0 WHERE ENDPOINT_TYPE_REF = ? AND ENDPOINT_TYPE_CLUSTER_REF = ?`,
+    [ endpointTypeRef, clusterRef ]
+  )
+}
+
 
 /**
  * Returns a promise of data for attributes inside an endpoint type.
@@ -903,3 +923,4 @@ exports.selectGlobalAttributeDefaults = selectGlobalAttributeDefaults
 exports.selectAttributeByCode = selectAttributeByCode
 exports.duplicateEndpointTypeAttribute = duplicateEndpointTypeAttribute
 exports.selectEndpointTypeAttributesByEndpointTypeRefAndClusterRef = selectEndpointTypeAttributesByEndpointTypeRefAndClusterRef
+exports.updateEndpointTypeAttributes = updateEndpointTypeAttributes

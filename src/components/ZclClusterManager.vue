@@ -83,7 +83,7 @@ limitations under the License.
           </q-input>
         </div>
         <q-list style="padding-bottom: 250px">
-          <div v-for="(domainName, index) in domainNames" :key="domainName.id">
+          <div v-for="(domainName, index) in domainNames" :key="domainName + index">
             <div v-show="clusterDomains(domainName).length > 0">
               <q-expansion-item
                 :id="domainName"

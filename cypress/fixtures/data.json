@@ -1,4 +1,5 @@
 {
+  "type":"zigbee",
   "endpoint1": "Billing Unit (0x0203)",
   "endpoint2": "CBA Config Tool (0x0005)",
   "endpoint3": "Chatting Station (0x0601)",
@@ -27,10 +28,12 @@
   "outOfRangeAmount1": "99999",
   "availableAttributes1": "17",
   "availableClusters1": "6",
-  "enum8inputpath": "8",
-  "int16inputpath": "19",
-  "int8clusterpath": "0",
-  "booleanclusterpath": "0",
-  "booleaninputpath": "15",
-  "bitmapinputpath": "16"
+  "enum8InputPath": "8",
+  "int16InputPath": "19",
+  "int8ClusterPath": "0",
+  "booleanClusterPath": "0",
+  "booleanInputPath": "15",
+  "bitmapInputPath": "16",
+  "enbledAttributesDir":"7",
+  "enabledClustersDir":"6"
 }

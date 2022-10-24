@@ -22,7 +22,7 @@ describe('Testing INT16U type validation', () => {
     () => {
       cy.fixture('data').then((data) => {
         cy.get(
-          `:nth-child(${data.int16inputpath}) > [style="min-width: 180px;"] > .q-field > .q-field__inner > .q-field__control > .q-field__control-container > input`
+          `:nth-child(${data.int16InputPath}) > [style="min-width: 180px;"] > .q-field > .q-field__inner > .q-field__control > .q-field__control-container > input`
         )
           .clear({ force: true })
           .type('test', { force: true })
@@ -35,7 +35,7 @@ describe('Testing INT16U type validation', () => {
     () => {
       cy.fixture('data').then((data) => {
         cy.get(
-          `:nth-child(${data.int16inputpath}) > [style="min-width: 180px;"] > .q-field > .q-field__inner > .q-field__bottom > .q-field__messages > div`
+          `:nth-child(${data.int16InputPath}) > [style="min-width: 180px;"] > .q-field > .q-field__inner > .q-field__bottom > .q-field__messages > div`
         ).should('exist')
       })
     }

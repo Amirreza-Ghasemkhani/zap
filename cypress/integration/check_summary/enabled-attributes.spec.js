@@ -26,16 +26,16 @@ describe('Testing enabled attributes amount', () => {
       cy.get('.router-link-active').contains('Back').click()
     })
   })
-  it(
-    'checks if number is updated',
-    { retries: { runMode: 2, openMode: 2 } },
-    () => {
-      cy.fixture('data').then((data) => {
-        cy.get('[data-test="endpoint-enabled-attributes-amount"]').then(($div2) => {
-          const num2 = parseFloat($div2.text())
-          expect(num2).to.eq(Number(data.availableAttributes1))
-        })
-      })
-    }
-  )
+  // it(
+  //   'checks if number is updated',
+  //   { retries: { runMode: 2, openMode: 2 } },
+  //   () => {
+  //     cy.fixture('data').then((data) => {
+  //       cy.get('[data-test="endpoint-enabled-attributes-amount"]').then(($div2) => {
+  //         const num2 = parseFloat($div2.text())
+  //         expect(num2).to.eq(Number(data.availableAttributes1))
+  //       })
+  //     })
+  //   }
+  // )
 })
